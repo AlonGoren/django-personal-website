@@ -6,7 +6,7 @@ Entrez.email = "your_email@whatever.com"
 import datetime
 
 def GetMyPubmedIDs():
-    handle = Entrez.esearch(db="pubmed", term="your name", retmax=463)
+    handle = Entrez.esearch(db="pubmed", term="Alon Goren", retmax=463)
     record = Entrez.read(handle)
     idlist = record["IdList"]
     return idlist

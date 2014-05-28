@@ -3,13 +3,18 @@ django-personal-website
 
 Template for making a personal website using django. Instructions given on how to create additional pages and how to serve it from Amazon.
 
-Special feature is an automatically updating publications page that pulls publications from pubmed using the Biopython library.
+Special feature is an automatically updating publications page that pulls publications from pubmed using the Biopython library. For an example of this page, see: http://www.melissagymrek.com/publications/
+
+Note in the instructions below, any time you should edit part of a command with information specific to your site/computer, it is enclosed by carrots:
+```
+<stuff specific to you>
+```
 
 Set up instructions
 =======================
 (These instructions assume you are on a fresh machine (e.g. booting up a new Amazon EC2 instance) from which you will serve your site.)
 
-Log into your computer.
+Log into the computer where you'll host your site
 =======================
 
 If you are using Amazon:
@@ -17,12 +22,12 @@ If you are using Amazon:
 
 2. Make sure your private key (.pem file) has permissions
 ```
-chmod 400 my_key.pem
+chmod 400 <my_key.pem>
 ```
 
 3. ssh into the instance
 ```
-ssh -i my_key.pem ec2-user@<aws_ec2_instance_dns>
+ssh -i <my_key.pem> ec2-user@<aws_ec2_instance_dns>
 ```
 
 4. Run
@@ -41,7 +46,7 @@ sudo yum -y install mysql mysql-server
 # Start MySQL
 sudo /etc/init.d/mysqld start
 # Configure username and password
-mysqladmin -u root password yourrootsqlpassword
+mysqladmin -u root password <yourrootsqlpassword>
 ```
 
 2. Install Apache and mod_python
@@ -91,7 +96,10 @@ Update **django-personal-website/home/settings.py**
 In **django-personal-website/templates/index.html**
 - Change "Your name"
 - Add a short description
-- Put a .jpg figure you would like on the homepage in ##django-personal-website/pictures/##. Replace "smiley.jpg" with the filename.
+- Put a .jpg figure you would like on the homepage in **django-personal-website/pictures/** (You can upload pictures and other files from your local computer to your instance using scp). Replace "smiley.jpg" in index.html with the filename. An example scp command:
+```
+scp -i <my_key.pem> <path-to-my-beautiful-picture.jpg> ec2-user@<aws_ec2_instance_dns>
+```
 
 In **django-personal-website/templates/publications/index.html**
 - Change "Your name"
@@ -103,27 +111,35 @@ In **django-personal-website/templates/publications/article.html**
 In **django-personal-website/publications/utils.py**:
 - Change "your name" to your name. This will search pubmed for publications with your name on them.
 
-In **django-personal-website/templates/resources.html**
+In **django-personal-website/templates/resources/index.html**
 - Change "Your name"
 
 Set up database and run locally
 =======================
 
-1. Create tables for each app
-'''
+1. Create the MySQL database
+```
+mysql -u root -e "create database <your-database-name>"; 
+```
+
+2. Create tables for each app
+```
+cd ~/django-personal-website/
 python manage.py sql publications
 python manage.py syncdb
-'''
+```
 
-2. Set up all the static files (docs/pictures/css)
+3. Set up all the static files (docs/pictures/css). You need to do this any time you update any pictures, css, or documents.
 ```
 python manage.py collectstatic
 ```
 
-3. Run the server (make sure you have port 80 set up to allow http access)
+4. Run the server (make sure you have port 80 set up to allow http access)
 ```
 sudo python manage.py runserver 0.0.0.0:80
 ```
+
+Paste your EC2 DNS to your web browser, and you should see your new site!
 
 Adding resources
 =======================
@@ -131,10 +147,10 @@ You can add "resources", and can tie them to publications if you want. For examp
 
 First make sure you have a superuser set up:
 ```
-python manage.py createsuperuser --username=joe --email=joe@example.com
+python manage.py createsuperuser --username=<joe> --email=<joe@example.com>
 ```
 
-Now, go to the django admin page at <ec2-dns:80>/admin. Sign in with the superuser name and password. Here you can manage everything in the database that django draws information from. For instance if you already ran the above steps you should see your publications listed. To add a resource, go to "Add resource".
+Now, go to the django admin page in your web browser \<your-amazon-ec2-dns\>/admin. Sign in with the superuser name and password. Here you can manage everything in the database that django draws information from. For instance if you already ran the above steps you should see your publications listed. To add a resource, go to "Add resource".
 
 
 Adding additional pages

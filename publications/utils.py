@@ -17,16 +17,16 @@ def UpdatePublicationDatabase():
     records = Medline.parse(handle)
     records = list(records)
     for rec in records:
-        authors = rec["FAU"]
-        journal = rec["TA"]
-        pubdate = rec["DA"]
-        pubdate = datetime.datetime(int(pubdate[0:4]), int(pubdate[4:6]), int(pubdate[6:]))
+        authors = rec.get("FAU","")
+        journal = rec.get("TA","")
+        pubdate = rec.get("DA","")
         try:
-            pages = rec["PG"]
-        except: pages = ""
-        volume = rec["VI"]
-        title = rec["TI"]
-        pmid = rec["PMID"]
+            pubdate = datetime.datetime(int(pubdate[0:4]), int(pubdate[4:6]), int(pubdate[6:]))
+        except: pubdate = ""
+        pages = rec.get("PG","")
+        volume = rec.get("VI","")
+        title = rec.get("TI","")
+        pmid = rec.get("PMID","")
         ip = rec.get("IP",0)
         # check if authors in database, if not then make an entry
         authors_list=[]
